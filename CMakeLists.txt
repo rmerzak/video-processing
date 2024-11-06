@@ -3,6 +3,7 @@ project(video C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(lib/glfw)
+add_definitions(-DGL_SILENCE_DEPRECATION)
 if(APPLE)
     list(APPEND Extra_LIBS 
         "-framework OpenGL"
