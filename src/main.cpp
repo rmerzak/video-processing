@@ -45,8 +45,8 @@ int main(int argc, const char** argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame_width, frame_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame_data);
-    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame_width, frame_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, frame_data);
+
     while(!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // glDrawPixels(100, 100, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -55,7 +55,7 @@ int main(int argc, const char** argv) {
         glfwGetFramebufferSize(window, &width, &height);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho( 0,width, height,0, -1, 1);
+        glOrtho( 0,width, height, 0, -1, 1);
         glMatrixMode(GL_MODELVIEW);
 
         // render whatever you like

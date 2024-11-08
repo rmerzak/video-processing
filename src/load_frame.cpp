@@ -2,22 +2,9 @@ extern "C" {
     #include<libavformat/avformat.h>
     #include<libavcodec/avcodec.h>
     #include<inttypes.h>
+    #include<libswscale/swscale.h>
 }
 #include <stdio.h>
-
-// bool load_frames(const char* filename, int *width, int *height, unsigned char** data) {
-    
-//     AVFormatContext* av_format_ctx = avformat_alloc_context();
-//     if(!av_format_ctx) {
-//         printf("Failed to allocate memory for format context\n");
-//         return false;
-//     }
-//     if(avformat_open_input(&av_format_ctx, filename, NULL, NULL) != 0) {
-//         printf("Coudnt open video file");
-//         return false;
-//     }
-//     return false;
-// }
 
 bool load_frames(const char* filename, int *width, int *height, unsigned char** data) {
     AVFormatContext* av_format_ctx = avformat_alloc_context();
@@ -113,11 +100,28 @@ bool load_frames(const char* filename, int *width, int *height, unsigned char** 
         av_packet_unref(av_packet);
     }
 
+    uint8_t* local_data = new uint8_t[av_frame->width * av_frame->height * 4];
+
+    SwsContext *sws_ctx = sws_getContext(av_frame->width, av_frame->height, av_codec_ctx->pix_fmt, av_frame->width, av_frame->height, AV_PIX_FMT_RGB0, SWS_BILINEAR, NULL, NULL, NULL);
+    if (!sws_ctx) {
+        printf("Failed to create sws context\n");
+        return false;
+    }
+    uint8_t* dest[4] = {local_data,NULL,NULL,NULL};
+    int dest_linesize[4] = {av_frame->width * 4,0,0,0};
+    sws_scale(sws_ctx, av_frame->data, av_frame->linesize, 0, av_frame->height, dest, dest_linesize);
+    sws_freeContext(sws_ctx);
+
+    *width = av_frame->width;
+    *height = av_frame->height;
+    *data = local_data;
+
 
     avformat_close_input(&av_format_ctx);
     avformat_free_context(av_format_ctx);
     avcodec_free_context(&av_codec_ctx);
     av_packet_free(&av_packet);
     av_frame_free(&av_frame);
+    
     return true;
 }
