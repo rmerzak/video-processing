@@ -3,6 +3,7 @@ project(video C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(lib/glfw)
+add_subdirectory(lib/FFmpeg)
 add_definitions(-DGL_SILENCE_DEPRECATION)
 if(APPLE)
     list(APPEND Extra_LIBS 
@@ -18,5 +19,9 @@ else()
         "-lGL -lGLU -lX11 -lXxf86vm -lXrandr -lpthread -lXi"
     )
 endif()
-add_executable(video src/main.cpp)
-target_link_libraries(video glfw ${Extra_LIBS})
+list (APPEND SOURCES
+    src/main.cpp
+    src/load_frame.cpp
+)
+add_executable(video ${SOURCES})
+target_link_libraries(video FFmpeg glfw ${Extra_LIBS})
